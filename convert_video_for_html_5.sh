@@ -24,27 +24,33 @@ else
     bitrate=2000k
 fi
 
+if [ $# -ge 3 ]; then
+    aspect=$3
+else
+    aspect=16:9
+fi
+
 file=`basename $1`
 file="${file%.*}"
 
 # Ogg/Theora
 ffmpeg -i $1 \
   -acodec libvorbis -ar 44100 -vb $bitrate\
-  -aspect 16:9 -y $file.ogv
+  -aspect $aspect -y $file.ogv
   
 # WebM/vp8
-ffmpeg -i $1 \
+ffmpeg -i $1 -map 0:0 -map 0:1 \
   -acodec libvorbis -ar 44100 \
   -pass 1 -passlogfile $file.dv -vb $bitrate\
-  -aspect 16:9 -y $file.webm
+  -aspect $aspect -y $file.webm
 
-ffmpeg -i $1 \
+ffmpeg -i $1 -map 0:0 -map 0:1 \
   -acodec libvorbis -ar 44100 \
   -pass 2 -passlogfile $file.dv -vb $bitrate\
-  -aspect 16:9 -y $file.webm
+  -aspect $aspect -y $file.webm
  
 # MP4/h264
 ffmpeg -i $1 \
   -acodec libfaac \
   -vcodec libx264 -vb $bitrate\
-  -aspect 16:9 -y $file.mp4
+  -aspect $aspect -y $file.mp4
