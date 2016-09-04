@@ -33,24 +33,28 @@ fi
 file=`basename $1`
 file="${file%.*}"
 
+# If you rotate the video you have to change also the ratio: 16:9 -> 9:16
+
+# rotate='-vf transpose=1'
+
 # Ogg/Theora
 ffmpeg -i $1 \
   -acodec libvorbis -ar 44100 -vb $bitrate\
-  -aspect $aspect -y $file.ogv
+  -aspect $aspect $rotate -y $file.ogv
   
 # WebM/vp8
 ffmpeg -i $1 -map 0:0 -map 0:1 \
   -acodec libvorbis -ar 44100 \
   -pass 1 -passlogfile $file.dv -vb $bitrate\
-  -aspect $aspect -y $file.webm
+  -aspect $aspect $rotate -y $file.webm
 
 ffmpeg -i $1 -map 0:0 -map 0:1 \
   -acodec libvorbis -ar 44100 \
   -pass 2 -passlogfile $file.dv -vb $bitrate\
-  -aspect $aspect -y $file.webm
+  -aspect $aspect $rotate -y $file.webm
  
 # MP4/h264
 ffmpeg -i $1 \
   -acodec libfaac \
   -vcodec libx264 -vb $bitrate\
-  -aspect $aspect -y $file.mp4
+  -aspect $aspect $rotate -y $file.mp4
